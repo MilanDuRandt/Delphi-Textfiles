@@ -1,0 +1,40 @@
+procedure TForm1.btnOpenFileCClick(Sender: TObject);
+var
+  torgfile, tfile: TextFile;
+  ofdFile: TOpenDialog;
+  sOrgName, sNewname, sLine, sNewLine : String;
+begin
+  ofdFile := TOpenDialog.Create(nil);
+  try
+    ofdFile.Filter := '*.txt';
+    if not ofdFile.Execute then
+      Exit;
+    sOrgName := ofdFile.FileName;
+  finally
+    ofdFile.Free;
+  end;
+
+  sNewname := sOrgName + '_backwards.txt';
+  DeleteFile(sNewname);
+
+  AssignFile(torgfile, sOrgName);
+  try
+    Reset(torgfile);
+
+    AssignFile(tfile, sNewname);
+    try
+      Rewrite(tfile);
+
+      while not Eof(torgfile) do
+      begin
+        Readln(torgfile, sLine);
+        sNewLine := AnsiReverseString(sLine);
+        WriteLn(tfile , sNewLine);
+      end;
+    finally
+      CloseFile(tfile);
+    end;
+  finally
+    CloseFile(sOrgName);
+  end;
+end;
